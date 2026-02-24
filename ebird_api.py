@@ -293,7 +293,7 @@ def main():
 
     # Common args helper
     def add_common(p):
-        p.add_argument("--key", required=True, help="eBird API key")
+        p.add_argument("--key", default=None, help="eBird API key (or set EBIRD_API_KEY env var)")
         p.add_argument("--locale", default="en", help="Locale for species names")
 
     def add_region(p):
@@ -397,6 +397,13 @@ def main():
     p.set_defaults(func=cmd_sub_regions)
 
     args = parser.parse_args()
+
+    # Resolve API key: --key flag takes priority over EBIRD_API_KEY env var
+    if not args.key:
+        args.key = os.environ.get("EBIRD_API_KEY")
+    if not args.key:
+        parser.error("API key required: use --key or set EBIRD_API_KEY environment variable")
+
     args.func(args)
 
 

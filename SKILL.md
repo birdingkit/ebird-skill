@@ -11,6 +11,8 @@ This skill lets you query the eBird API 2.0 to answer birdwatching questions. Yo
 
 The user needs an eBird API key. If they haven't provided one yet in this conversation, ask them to paste it. Store it for use in API calls throughout the session.
 
+The script accepts the API key via `--key` flag or the `EBIRD_API_KEY` environment variable. If the user has set the env var, you can omit `--key` from commands.
+
 API keys are free — users can register at https://ebird.org/api/keygen
 
 ## How to Use

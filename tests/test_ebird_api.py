@@ -320,3 +320,56 @@ class TestCommandParams:
         assert params["lat"] == 25.03
         assert params["dist"] == 50
         assert params["detail"] == "full"
+
+
+# ---------------------------------------------------------------------------
+# API key resolution: --key flag vs EBIRD_API_KEY env var
+# ---------------------------------------------------------------------------
+
+class TestApiKeyResolution:
+    """Verify --key flag > env var > error."""
+
+    def _run_main(self, cli_args, env=None):
+        """Run main() with given CLI args and optional env override."""
+        with mock.patch("sys.argv", ["ebird_api.py"] + cli_args):
+            with mock.patch.dict(os.environ, env or {}, clear=False):
+                with mock.patch("ebird_api.api_get", return_value=[]):
+                    with mock.patch("ebird_api.print_json"):
+                        ebird_api.main()
+
+    def test_key_from_flag(self):
+        """--key flag should be used when provided."""
+        with mock.patch("sys.argv", ["ebird_api.py", "stats", "--key", "FLAG_KEY", "--region", "TW", "--date", "2025-01-01"]):
+            with mock.patch("ebird_api.api_get", return_value=[]) as m:
+                with mock.patch("ebird_api.print_json"):
+                    ebird_api.main()
+        assert m.call_args[0][1] == "FLAG_KEY"
+
+    def test_key_from_env(self):
+        """EBIRD_API_KEY env var should be used when --key is not provided."""
+        with mock.patch("sys.argv", ["ebird_api.py", "stats", "--region", "TW", "--date", "2025-01-01"]):
+            with mock.patch.dict(os.environ, {"EBIRD_API_KEY": "ENV_KEY"}):
+                with mock.patch("ebird_api.api_get", return_value=[]) as m:
+                    with mock.patch("ebird_api.print_json"):
+                        ebird_api.main()
+        assert m.call_args[0][1] == "ENV_KEY"
+
+    def test_flag_overrides_env(self):
+        """--key flag should take priority over env var."""
+        with mock.patch("sys.argv", ["ebird_api.py", "stats", "--key", "FLAG_KEY", "--region", "TW", "--date", "2025-01-01"]):
+            with mock.patch.dict(os.environ, {"EBIRD_API_KEY": "ENV_KEY"}):
+                with mock.patch("ebird_api.api_get", return_value=[]) as m:
+                    with mock.patch("ebird_api.print_json"):
+                        ebird_api.main()
+        assert m.call_args[0][1] == "FLAG_KEY"
+
+    def test_no_key_exits_with_error(self):
+        """Missing both --key and env var should exit with error."""
+        with mock.patch("sys.argv", ["ebird_api.py", "stats", "--region", "TW", "--date", "2025-01-01"]):
+            with mock.patch.dict(os.environ, {}, clear=False):
+                # Remove EBIRD_API_KEY if it happens to be set
+                env = os.environ.copy()
+                env.pop("EBIRD_API_KEY", None)
+                with mock.patch.dict(os.environ, env, clear=True):
+                    with pytest.raises(SystemExit):
+                        ebird_api.main()
