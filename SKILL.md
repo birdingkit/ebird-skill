@@ -9,23 +9,25 @@ This skill lets you query the eBird API 2.0 to answer birdwatching questions. Yo
 
 ## Setup
 
-The user needs an eBird API key. If they haven't provided one yet in this conversation, ask them to paste it. Store it for use in API calls throughout the session.
-
-The script accepts the API key via `--key` flag or the `EBIRD_API_KEY` environment variable. If the user has set the env var, you can omit `--key` from commands.
+The user needs an eBird API key. If they haven't provided one yet in this conversation, ask them to paste it.
 
 API keys are free — users can register at https://ebird.org/api/keygen
 
+**IMPORTANT — API key must never appear in plaintext in terminal commands.** Follow this procedure:
+
+1. After the user provides a key, write it to a temp file: `cat > /tmp/.ebird_env <<< "export EBIRD_API_KEY=<key>"`
+2. Source it before every command: `source /tmp/.ebird_env && python ebird_api.py ...`
+3. Never use the `--key <key>` flag or inline `EBIRD_API_KEY=<key> python ...` syntax — both expose the key in terminal output
+
 ## How to Use
 
-Run the bundled Python script `ebird_api.py` to make API calls. The script supports multiple commands that map to eBird API endpoints.
+Run the bundled Python script `ebird_api.py` (located in this skill's directory) to make API calls. The script reads the API key from the `EBIRD_API_KEY` environment variable, so always source the key file before running.
 
 ### General Pattern
 
 ```bash
-python /path/to/ebird-query/ebird_api.py <command> --key <API_KEY> [options]
+source /tmp/.ebird_env && python /path/to/ebird_api.py <command> [options]
 ```
-
-Always pass the API key the user provided via `--key`.
 
 ### Available Commands
 
@@ -33,7 +35,7 @@ Always pass the API key the user provided via `--key`.
 Find what birds have been seen recently in a region.
 
 ```bash
-python ebird_api.py recent --key KEY --region TW --back 7 --locale zh
+source /tmp/.ebird_env && python ebird_api.py recent --region TW --back 7 --locale zh
 ```
 - `--region`: eBird region code (e.g., `TW`, `JP`, `US-NY`, `TW-TPE`)
 - `--back`: Number of days back (1-30, default 14)
@@ -46,7 +48,7 @@ python ebird_api.py recent --key KEY --region TW --back 7 --locale zh
 Find what birds have been seen near a specific location.
 
 ```bash
-python ebird_api.py nearby --key KEY --lat 25.03 --lng 121.56 --dist 25 --back 7
+python ebird_api.py nearby --lat 25.03 --lng 121.56 --dist 25 --back 7
 ```
 - `--lat`, `--lng`: Coordinates (required)
 - `--dist`: Search radius in km (default 25, max 50)
@@ -56,48 +58,48 @@ python ebird_api.py nearby --key KEY --lat 25.03 --lng 121.56 --dist 25 --back 7
 Find rare or unusual species reported in a region.
 
 ```bash
-python ebird_api.py notable --key KEY --region TW --back 14
+python ebird_api.py notable --region TW --back 14
 ```
 
 #### 4. `nearby-notable` — Notable observations near coordinates
 
 ```bash
-python ebird_api.py nearby-notable --key KEY --lat 25.03 --lng 121.56 --dist 50
+python ebird_api.py nearby-notable --lat 25.03 --lng 121.56 --dist 50
 ```
 
 #### 5. `species` — Recent observations of a specific species
 Find where a specific species has been seen recently.
 
 ```bash
-python ebird_api.py species --key KEY --code barswa1 --region TW
+python ebird_api.py species --code barswa1 --region TW
 ```
 - `--code`: eBird species code (e.g., `barswa1` for Barn Swallow). Use the `taxonomy` command to look up codes.
 
 #### 6. `nearby-species` — Find a specific species near coordinates
 
 ```bash
-python ebird_api.py nearby-species --key KEY --code barswa1 --lat 25.03 --lng 121.56
+python ebird_api.py nearby-species --code barswa1 --lat 25.03 --lng 121.56
 ```
 
 #### 7. `hotspots` — Hotspots in a region
 Find popular birdwatching locations.
 
 ```bash
-python ebird_api.py hotspots --key KEY --region TW-TPE
+python ebird_api.py hotspots --region TW-TPE
 ```
 
 #### 8. `nearby-hotspots` — Hotspots near coordinates
 
 ```bash
-python ebird_api.py nearby-hotspots --key KEY --lat 25.03 --lng 121.56 --dist 25
+python ebird_api.py nearby-hotspots --lat 25.03 --lng 121.56 --dist 25
 ```
 
 #### 9. `taxonomy` — Search for species by name
 Look up species codes and scientific names. Useful when you need the species code for other commands.
 
 ```bash
-python ebird_api.py taxonomy --key KEY --species "Barn Swallow"
-python ebird_api.py taxonomy --key KEY --species "黑面琵鷺" --locale zh
+python ebird_api.py taxonomy --species "Barn Swallow"
+python ebird_api.py taxonomy --species "黑面琵鷺" --locale zh
 ```
 - `--species`: Common or partial name to search for
 - `--locale`: Language of the name you're searching
@@ -105,31 +107,31 @@ python ebird_api.py taxonomy --key KEY --species "黑面琵鷺" --locale zh
 #### 10. `hotspot-info` — Details about a specific hotspot
 
 ```bash
-python ebird_api.py hotspot-info --key KEY --loc L1234567
+python ebird_api.py hotspot-info --loc L1234567
 ```
 
 #### 11. `historic` — Observations on a specific date
 
 ```bash
-python ebird_api.py historic --key KEY --region TW --date 2025-01-15
+python ebird_api.py historic --region TW --date 2025-01-15
 ```
 
 #### 12. `top100` — Top 100 contributors in a region on a date
 
 ```bash
-python ebird_api.py top100 --key KEY --region TW --date 2025-01-15
+python ebird_api.py top100 --region TW --date 2025-01-15
 ```
 
 #### 13. `stats` — Regional statistics (number of contributors, checklists, species) on a date
 
 ```bash
-python ebird_api.py stats --key KEY --region TW --date 2025-01-15
+python ebird_api.py stats --region TW --date 2025-01-15
 ```
 
 #### 14. `sub-regions` — List sub-regions of a region
 
 ```bash
-python ebird_api.py sub-regions --key KEY --region TW --type subnational1
+python ebird_api.py sub-regions --region TW --type subnational1
 ```
 - `--type`: `subnational1` (states/counties) or `subnational2` (cities/districts)
 
@@ -141,8 +143,21 @@ eBird uses hierarchical region codes:
 - Sub-region: `US-NY-061` (New York County)
 - Location: `L1234567` (specific hotspot ID)
 
-If the user mentions a place name instead of a code, help them figure out the right code. You can use `sub-regions` to discover valid sub-region codes, or look up the region code from your knowledge. Some common ones for Taiwan:
-- `TW-TPE` Taipei City, `TW-NWT` New Taipei, `TW-TAO` Taoyuan, `TW-TXG` Taichung, `TW-TNN` Tainan, `TW-KHH` Kaohsiung, `TW-ILA` Yilan, `TW-HUA` Hualien, `TW-TTT` Taitung, `TW-PIF` Pingtung, `TW-KIN` Kinmen, `TW-PEN` Penghu
+If the user mentions a place name instead of a code, help them figure out the right code. You can use `sub-regions` to discover valid sub-region codes, or look up the region code from your knowledge.
+
+### Taiwan Region Codes
+
+- `TW-TPE` Taipei City, `TW-NWT` New Taipei, `TW-KEE` Keelung
+- `TW-TAO` Taoyuan, `TW-HSZ` Hsinchu City, `TW-HSQ` Hsinchu County
+- `TW-MIA` Miaoli, `TW-TXG` Taichung, `TW-CHA` Changhua, `TW-NAN` Nantou
+- `TW-YUN` Yunlin, `TW-CYI` Chiayi County, `TW-CYQ` Chiayi City
+- `TW-TNN` Tainan, `TW-KHH` Kaohsiung, `TW-PIF` Pingtung
+- `TW-ILA` Yilan, `TW-HUA` Hualien, `TW-TTT` Taitung
+- `TW-PEN` Penghu, `TW-KIN` Kinmen, `TW-LIE` Lienchiang (Matsu)
+
+### Handling Sub-county Locations (Townships, Wetlands, Scenic Areas)
+
+eBird region codes only go down to county level. For townships or specific locations (e.g., 布袋, 鰲鼓, 七股), there is no region code. **Use coordinates with `nearby` series commands instead.** Look up approximate coordinates from your knowledge and use `--dist` to set an appropriate radius.
 
 ## Interpreting Results and Responding
 
@@ -159,6 +174,7 @@ When presenting results to the user:
 Many user questions require chaining multiple API calls:
 
 - "Where can I see [bird]?" → `taxonomy` (get code) → `species` or `nearby-species`
+- "[specific location] 的 [bird]" → `taxonomy` (get code) → `nearby-species` (use coordinates of that location)
 - "What rare birds are near me?" → `nearby-notable` (with user's coordinates)
 - "Best birding spots in [area]?" → `hotspots` → optionally `recent` for top hotspots
 - "What birds are at [hotspot]?" → `recent` with the hotspot's region or location ID

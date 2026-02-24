@@ -1,3 +1,5 @@
+[繁體中文](README.zh-TW.md) | **English**
+
 # ebird-skill
 
 A [Claude Code](https://claude.com/claude-code) skill for querying the [eBird API 2.0](https://documenter.getpostman.com/view/664302/S1ENwy59). Ask about bird sightings, hotspots, rare birds, species lists, and regional statistics — Claude handles the API calls for you.
@@ -18,12 +20,20 @@ When you use the skill, Claude will ask for your API key if you haven't provided
 
 ## What You Can Ask
 
+**Bird sightings**
 - "What birds have been seen in Taipei recently?"
 - "Where can I see a Black-faced Spoonbill?"
 - "What rare birds are near me?"
 - "Best birding hotspots in Yilan?"
 - "Who are the top eBird contributors in Taiwan today?"
 - "台北最近有什麼鳥？" (supports Mandarin and other languages)
+
+**Data analysis & export**
+- "Export the results to CSV"
+- "Compare species counts between Taipei and Tainan over the past month"
+- "Plot the Black-faced Spoonbill count trend in Qigu over the past two weeks"
+- "Use R to analyze bird diversity in Chiayi coastal wetlands"
+- "Map the number of eBird hotspots by county across Taiwan"
 
 ## Supported Commands
 
