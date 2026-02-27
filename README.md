@@ -45,14 +45,25 @@ When you use the skill, Claude will ask for your API key if you haven't provided
 | `nearby-notable` | Rare/notable observations near coordinates |
 | `species` | Recent observations of a specific species |
 | `nearby-species` | Find a specific species near coordinates |
+| `nearest-species` | Nearest locations where a species has been seen |
 | `hotspots` | Birdwatching hotspots in a region |
 | `nearby-hotspots` | Hotspots near coordinates |
 | `taxonomy` | Search for species by name (with local cache) |
 | `hotspot-info` | Details about a specific hotspot |
 | `historic` | Observations on a specific date |
+| `recent-checklists` | Most recently submitted checklists in a region |
+| `checklist-feed` | Checklists submitted on a specific date |
+| `species-list` | All species ever observed in a region |
+| `view-checklist` | View details of a specific checklist |
 | `top100` | Top 100 contributors on a date |
 | `stats` | Regional statistics on a date |
 | `sub-regions` | List sub-regions of a region |
+| `region-info` | Name, bounds, and geographic info for a region |
+| `adjacent-regions` | Regions sharing a border |
+| `taxonomy-forms` | Subspecies/forms for a species |
+| `taxonomy-versions` | List all taxonomy versions |
+| `taxonomy-groups` | Species groups (terns, finches, etc.) |
+| `taxonomy-locales` | Supported locale codes for species names |
 
 ## Using with R or Other Languages
 

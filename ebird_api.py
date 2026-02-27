@@ -6,8 +6,11 @@ Usage:
 
 Commands:
     recent, nearby, notable, nearby-notable, species, nearby-species,
-    hotspots, nearby-hotspots, taxonomy, hotspot-info, historic,
-    top100, stats, sub-regions
+    nearest-species, hotspots, nearby-hotspots, taxonomy, hotspot-info,
+    historic, recent-checklists, checklist-feed, species-list,
+    view-checklist, top100, stats, sub-regions, region-info,
+    adjacent-regions, taxonomy-forms, taxonomy-versions, taxonomy-groups,
+    taxonomy-locales
 """
 
 import argparse
@@ -287,6 +290,94 @@ def cmd_sub_regions(args):
     print_json(data)
 
 
+def cmd_nearest_species(args):
+    """Nearest observations of a species."""
+    params = {
+        "lat": args.lat,
+        "lng": args.lng,
+        "dist": args.dist,
+        "back": args.back,
+        "maxResults": args.max,
+        "locale": args.locale,
+    }
+    data = api_get(f"/data/nearest/geo/recent/{args.code}", args.key, params)
+    print_json(data)
+
+
+def cmd_recent_checklists(args):
+    """Most recently submitted checklists in a region."""
+    params = {
+        "maxResults": args.max,
+    }
+    data = api_get(f"/product/lists/{args.region}", args.key, params)
+    print_json(data)
+
+
+def cmd_checklist_feed(args):
+    """Checklists submitted on a specific date."""
+    y, m, d = parse_date(args.date)
+    params = {
+        "sortKey": args.sort_key,
+        "maxResults": args.max,
+    }
+    data = api_get(f"/product/lists/{args.region}/{y}/{m}/{d}", args.key, params)
+    print_json(data)
+
+
+def cmd_species_list(args):
+    """All species ever observed in a region."""
+    data = api_get(f"/product/spplist/{args.region}", args.key)
+    print_json(data)
+
+
+def cmd_view_checklist(args):
+    """View details of a specific checklist."""
+    data = api_get(f"/product/checklist/view/{args.sub_id}", args.key)
+    print_json(data)
+
+
+def cmd_taxonomy_forms(args):
+    """Subspecies/forms for a species."""
+    data = api_get(f"/ref/taxon/forms/{args.code}", args.key)
+    print_json(data)
+
+
+def cmd_taxonomy_versions(args):
+    """List all taxonomy versions."""
+    data = api_get("/ref/taxonomy/versions", args.key)
+    print_json(data)
+
+
+def cmd_taxonomy_groups(args):
+    """Species groups (terns, finches, etc.)."""
+    params = {
+        "locale": args.locale,
+    }
+    data = api_get(f"/ref/sppgroup/{args.ordering}", args.key, params)
+    print_json(data)
+
+
+def cmd_taxonomy_locales(args):
+    """Supported locale codes for species names."""
+    data = api_get("/ref/taxa-locales/ebird", args.key)
+    print_json(data)
+
+
+def cmd_region_info(args):
+    """Name, bounds, and geographic info for a region."""
+    params = {
+        "regionNameFormat": args.format,
+    }
+    data = api_get(f"/ref/region/info/{args.region}", args.key, params)
+    print_json(data)
+
+
+def cmd_adjacent_regions(args):
+    """Regions sharing a border."""
+    data = api_get(f"/ref/adjacent/{args.region}", args.key)
+    print_json(data)
+
+
 def main():
     parser = argparse.ArgumentParser(description="eBird API 2.0 query tool")
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -395,6 +486,70 @@ def main():
     add_common(p); add_region(p)
     p.add_argument("--type", default="subnational1", help="subnational1 or subnational2")
     p.set_defaults(func=cmd_sub_regions)
+
+    # nearest-species
+    p = subparsers.add_parser("nearest-species")
+    add_common(p); add_geo(p); add_back(p); add_max(p)
+    p.add_argument("--code", required=True, help="eBird species code")
+    p.set_defaults(func=cmd_nearest_species)
+
+    # recent-checklists
+    p = subparsers.add_parser("recent-checklists")
+    add_common(p); add_region(p)
+    p.add_argument("--max", type=int, default=10, help="Max results (1-200)")
+    p.set_defaults(func=cmd_recent_checklists)
+
+    # checklist-feed
+    p = subparsers.add_parser("checklist-feed")
+    add_common(p); add_region(p)
+    p.add_argument("--date", required=True, help="Date YYYY-MM-DD")
+    p.add_argument("--sort-key", default="obs_dt", help="Sort by obs_dt or creation_dt")
+    p.add_argument("--max", type=int, default=10, help="Max results (1-200)")
+    p.set_defaults(func=cmd_checklist_feed)
+
+    # species-list
+    p = subparsers.add_parser("species-list")
+    add_common(p); add_region(p)
+    p.set_defaults(func=cmd_species_list)
+
+    # view-checklist
+    p = subparsers.add_parser("view-checklist")
+    add_common(p)
+    p.add_argument("--sub-id", required=True, help="Checklist submission ID (e.g. S22893621)")
+    p.set_defaults(func=cmd_view_checklist)
+
+    # taxonomy-forms
+    p = subparsers.add_parser("taxonomy-forms")
+    add_common(p)
+    p.add_argument("--code", required=True, help="eBird species code")
+    p.set_defaults(func=cmd_taxonomy_forms)
+
+    # taxonomy-versions
+    p = subparsers.add_parser("taxonomy-versions")
+    add_common(p)
+    p.set_defaults(func=cmd_taxonomy_versions)
+
+    # taxonomy-groups
+    p = subparsers.add_parser("taxonomy-groups")
+    add_common(p)
+    p.add_argument("--ordering", default="ebird", help="ebird or merlin")
+    p.set_defaults(func=cmd_taxonomy_groups)
+
+    # taxonomy-locales
+    p = subparsers.add_parser("taxonomy-locales")
+    add_common(p)
+    p.set_defaults(func=cmd_taxonomy_locales)
+
+    # region-info
+    p = subparsers.add_parser("region-info")
+    add_common(p); add_region(p)
+    p.add_argument("--format", default="full", help="Name format: detailed/detailednoqual/full/namequal/nameonly/revdetailed")
+    p.set_defaults(func=cmd_region_info)
+
+    # adjacent-regions
+    p = subparsers.add_parser("adjacent-regions")
+    add_common(p); add_region(p)
+    p.set_defaults(func=cmd_adjacent_regions)
 
     args = parser.parse_args()
 

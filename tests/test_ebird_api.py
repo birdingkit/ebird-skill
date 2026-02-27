@@ -321,6 +321,126 @@ class TestCommandParams:
         assert params["dist"] == 50
         assert params["detail"] == "full"
 
+    def test_cmd_nearest_species_params(self):
+        args = argparse.Namespace(
+            key="K", locale="en", lat=25.03, lng=121.56,
+            dist=50, back=14, max=3000, code="bkfspo1",
+        )
+        with mock.patch("ebird_api.api_get", return_value=[]) as m:
+            with mock.patch("ebird_api.print_json"):
+                ebird_api.cmd_nearest_species(args)
+        path, key, params = m.call_args[0]
+        assert path == "/data/nearest/geo/recent/bkfspo1"
+        assert params["lat"] == 25.03
+        assert params["lng"] == 121.56
+        assert params["maxResults"] == 3000
+
+    def test_cmd_recent_checklists_params(self):
+        args = argparse.Namespace(
+            key="K", locale="en", region="TW", max=10,
+        )
+        with mock.patch("ebird_api.api_get", return_value=[]) as m:
+            with mock.patch("ebird_api.print_json"):
+                ebird_api.cmd_recent_checklists(args)
+        path, key, params = m.call_args[0]
+        assert path == "/product/lists/TW"
+        assert params["maxResults"] == 10
+
+    def test_cmd_checklist_feed_params(self):
+        args = argparse.Namespace(
+            key="K", locale="en", region="TW",
+            date="2025-03-15", sort_key="obs_dt", max=10,
+        )
+        with mock.patch("ebird_api.api_get", return_value=[]) as m:
+            with mock.patch("ebird_api.print_json"):
+                ebird_api.cmd_checklist_feed(args)
+        path, key, params = m.call_args[0]
+        assert path == "/product/lists/TW/2025/3/15"
+        assert params["sortKey"] == "obs_dt"
+        assert params["maxResults"] == 10
+
+    def test_cmd_species_list_params(self):
+        args = argparse.Namespace(
+            key="K", locale="en", region="TW",
+        )
+        with mock.patch("ebird_api.api_get", return_value=[]) as m:
+            with mock.patch("ebird_api.print_json"):
+                ebird_api.cmd_species_list(args)
+        path, key = m.call_args[0][:2]
+        assert path == "/product/spplist/TW"
+
+    def test_cmd_view_checklist_params(self):
+        args = argparse.Namespace(
+            key="K", locale="en", sub_id="S22893621",
+        )
+        with mock.patch("ebird_api.api_get", return_value=[]) as m:
+            with mock.patch("ebird_api.print_json"):
+                ebird_api.cmd_view_checklist(args)
+        path, key = m.call_args[0][:2]
+        assert path == "/product/checklist/view/S22893621"
+
+    def test_cmd_taxonomy_forms_params(self):
+        args = argparse.Namespace(
+            key="K", locale="en", code="barswa1",
+        )
+        with mock.patch("ebird_api.api_get", return_value=[]) as m:
+            with mock.patch("ebird_api.print_json"):
+                ebird_api.cmd_taxonomy_forms(args)
+        path, key = m.call_args[0][:2]
+        assert path == "/ref/taxon/forms/barswa1"
+
+    def test_cmd_taxonomy_versions_params(self):
+        args = argparse.Namespace(
+            key="K", locale="en",
+        )
+        with mock.patch("ebird_api.api_get", return_value=[]) as m:
+            with mock.patch("ebird_api.print_json"):
+                ebird_api.cmd_taxonomy_versions(args)
+        path, key = m.call_args[0][:2]
+        assert path == "/ref/taxonomy/versions"
+
+    def test_cmd_taxonomy_groups_params(self):
+        args = argparse.Namespace(
+            key="K", locale="en", ordering="merlin",
+        )
+        with mock.patch("ebird_api.api_get", return_value=[]) as m:
+            with mock.patch("ebird_api.print_json"):
+                ebird_api.cmd_taxonomy_groups(args)
+        path, key, params = m.call_args[0]
+        assert path == "/ref/sppgroup/merlin"
+        assert params["locale"] == "en"
+
+    def test_cmd_taxonomy_locales_params(self):
+        args = argparse.Namespace(
+            key="K", locale="en",
+        )
+        with mock.patch("ebird_api.api_get", return_value=[]) as m:
+            with mock.patch("ebird_api.print_json"):
+                ebird_api.cmd_taxonomy_locales(args)
+        path, key = m.call_args[0][:2]
+        assert path == "/ref/taxa-locales/ebird"
+
+    def test_cmd_region_info_params(self):
+        args = argparse.Namespace(
+            key="K", locale="en", region="TW", format="full",
+        )
+        with mock.patch("ebird_api.api_get", return_value=[]) as m:
+            with mock.patch("ebird_api.print_json"):
+                ebird_api.cmd_region_info(args)
+        path, key, params = m.call_args[0]
+        assert path == "/ref/region/info/TW"
+        assert params["regionNameFormat"] == "full"
+
+    def test_cmd_adjacent_regions_params(self):
+        args = argparse.Namespace(
+            key="K", locale="en", region="US-NY-061",
+        )
+        with mock.patch("ebird_api.api_get", return_value=[]) as m:
+            with mock.patch("ebird_api.print_json"):
+                ebird_api.cmd_adjacent_regions(args)
+        path, key = m.call_args[0][:2]
+        assert path == "/ref/adjacent/US-NY-061"
+
 
 # ---------------------------------------------------------------------------
 # API key resolution: --key flag vs EBIRD_API_KEY env var

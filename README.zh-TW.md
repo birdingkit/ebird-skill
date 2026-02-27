@@ -45,14 +45,25 @@ claude skill add /path/to/ebird-skill
 | `nearby-notable` | 座標附近的稀有鳥種紀錄 |
 | `species` | 特定物種在某地區的近期紀錄 |
 | `nearby-species` | 座標附近的特定物種紀錄 |
+| `nearest-species` | 最近有觀察到特定物種的地點 |
 | `hotspots` | 某地區的賞鳥熱點 |
 | `nearby-hotspots` | 座標附近的賞鳥熱點 |
 | `taxonomy` | 以名稱搜尋物種（含本地快取） |
 | `hotspot-info` | 特定熱點的詳細資訊 |
 | `historic` | 特定日期的觀察紀錄 |
+| `recent-checklists` | 某地區最近提交的清單 |
+| `checklist-feed` | 特定日期提交的清單 |
+| `species-list` | 某地區曾觀察到的所有物種 |
+| `view-checklist` | 查看特定清單的詳細資料 |
 | `top100` | 特定日期的前 100 名貢獻者 |
 | `stats` | 特定日期的地區統計 |
 | `sub-regions` | 列出某地區的子區域 |
+| `region-info` | 地區的名稱、範圍及地理資訊 |
+| `adjacent-regions` | 相鄰的地區 |
+| `taxonomy-forms` | 物種的亞種／型態 |
+| `taxonomy-versions` | 列出所有分類版本 |
+| `taxonomy-groups` | 物種分類群（燕鷗、雀科等） |
+| `taxonomy-locales` | 支援的物種名稱語系代碼 |
 
 ## 搭配 R 或其他語言使用
 

@@ -135,6 +135,93 @@ python ebird_api.py sub-regions --region TW --type subnational1
 ```
 - `--type`: `subnational1` (states/counties) or `subnational2` (cities/districts)
 
+#### 15. `nearest-species` — Nearest locations where a species has been seen
+
+```bash
+python ebird_api.py nearest-species --code bkfspo1 --lat 25.03 --lng 121.56
+```
+- `--code`: eBird species code (required)
+- `--lat`, `--lng`: Coordinates (required)
+- `--dist`: Search radius in km (default 25, max 50)
+- `--back`: Days back (1-30, default 14)
+- `--max`: Max results (default 50)
+
+#### 16. `recent-checklists` — Most recently submitted checklists in a region
+
+```bash
+python ebird_api.py recent-checklists --region TW --max 10
+```
+- `--region`: eBird region code (required)
+- `--max`: Max results (1-200, default 10)
+
+#### 17. `checklist-feed` — Checklists submitted on a specific date
+
+```bash
+python ebird_api.py checklist-feed --region TW --date 2025-01-15 --sort-key obs_dt
+```
+- `--region`: eBird region code (required)
+- `--date`: Date in YYYY-MM-DD format (required)
+- `--sort-key`: Sort by `obs_dt` (observation date) or `creation_dt` (creation date), default `obs_dt`
+- `--max`: Max results (1-200, default 10)
+
+#### 18. `species-list` — All species ever observed in a region
+
+```bash
+python ebird_api.py species-list --region TW
+```
+- `--region`: eBird region code (required)
+
+#### 19. `view-checklist` — View details of a specific checklist
+
+```bash
+python ebird_api.py view-checklist --sub-id S22893621
+```
+- `--sub-id`: Checklist submission ID (required, e.g. S22893621)
+
+#### 20. `taxonomy-forms` — Subspecies/forms for a species
+
+```bash
+python ebird_api.py taxonomy-forms --code barswa1
+```
+- `--code`: eBird species code (required)
+
+#### 21. `taxonomy-versions` — List all taxonomy versions
+
+```bash
+python ebird_api.py taxonomy-versions
+```
+No additional parameters required.
+
+#### 22. `taxonomy-groups` — Species groups (terns, finches, etc.)
+
+```bash
+python ebird_api.py taxonomy-groups --ordering ebird --locale zh
+```
+- `--ordering`: `ebird` or `merlin` (default `ebird`)
+- `--locale`: Language for group names (default `en`)
+
+#### 23. `taxonomy-locales` — Supported locale codes for species names
+
+```bash
+python ebird_api.py taxonomy-locales
+```
+No additional parameters required.
+
+#### 24. `region-info` — Name, bounds, and geographic info for a region
+
+```bash
+python ebird_api.py region-info --region TW --format full
+```
+- `--region`: eBird region code (required)
+- `--format`: Name format — `detailed`, `detailednoqual`, `full`, `namequal`, `nameonly`, `revdetailed` (default `full`)
+
+#### 25. `adjacent-regions` — Regions sharing a border
+
+```bash
+python ebird_api.py adjacent-regions --region US-NY-061
+```
+- `--region`: eBird region code (required). Best supported for US/NZ/MX subnational2 codes.
+
 ## Region Code Reference
 
 eBird uses hierarchical region codes:
